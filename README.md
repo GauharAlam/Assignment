@@ -78,3 +78,5 @@ A full-stack web application for managing events and memberships.
 - **Membership Management**: Add memberships with different durations (6mo, 1yr, 2yr).
 - **Form Validations**: Mandatory fields and valid formats checked on both frontend and backend.
 - **Flow Chart**: A reference page showing the logical application flow.
+
+# Assignment
