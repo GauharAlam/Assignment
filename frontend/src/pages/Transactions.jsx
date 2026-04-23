@@ -30,8 +30,8 @@ const Transactions = () => {
     const fetchMasterData = async () => {
         try {
             const [membersRes, eventsRes] = await Promise.all([
-                axios.get('http://127.0.0.1:5000/api/maintenance/members'),
-                axios.get('http://127.0.0.1:5000/api/maintenance/events')
+                axios.get('http://localhost:5001/api/maintenance/members'),
+                axios.get('http://localhost:5001/api/maintenance/events')
             ]);
             setMembers(membersRes.data);
             setEvents(eventsRes.data);
@@ -52,7 +52,7 @@ const Transactions = () => {
         }
 
         try {
-            await axios.post('http://127.0.0.1:5000/api/transactions/add', {
+            await axios.post('http://localhost:5001/api/transactions/add', {
                 ...addForm,
                 receiveNotifications: addForm.receiveNotifications ? 'Yes' : 'No'
             });
@@ -78,7 +78,7 @@ const Transactions = () => {
             return;
         }
         try {
-            const res = await axios.get(`http://127.0.0.1:5000/api/transactions/${searchNumber}`);
+            const res = await axios.get(`http://localhost:5001/api/transactions/${searchNumber}`);
             setUpdateData(res.data);
         } catch (err) {
             setError('Membership not found');
@@ -87,7 +87,7 @@ const Transactions = () => {
 
     const handleUpdateAction = async (action) => {
         try {
-            await axios.patch(`http://127.0.0.1:5000/api/transactions/update/${searchNumber}`, {
+            await axios.patch(`http://localhost:5001/api/transactions/update/${searchNumber}`, {
                 action,
                 duration: action === 'Extend' ? extendDuration : undefined
             });

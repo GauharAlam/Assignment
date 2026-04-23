@@ -21,8 +21,8 @@ const Maintenance = () => {
     const fetchData = async () => {
         try {
             const [eventsRes, membersRes] = await Promise.all([
-                axios.get('http://127.0.0.1:5000/api/maintenance/events'),
-                axios.get('http://127.0.0.1:5000/api/maintenance/members')
+                axios.get('http://localhost:5001/api/maintenance/events'),
+                axios.get('http://localhost:5001/api/maintenance/members')
             ]);
             setEvents(eventsRes.data);
             setMembers(membersRes.data);
@@ -35,7 +35,7 @@ const Maintenance = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post('http://127.0.0.1:5000/api/maintenance/events', {
+            await axios.post('http://localhost:5001/api/maintenance/events', {
                 name: eventName,
                 date: eventDate,
                 location: eventLocation
@@ -55,7 +55,7 @@ const Maintenance = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post('http://127.0.0.1:5000/api/maintenance/members', {
+            await axios.post('http://localhost:5001/api/maintenance/members', {
                 name: memberName,
                 email: memberEmail,
                 phone: memberPhone
@@ -74,7 +74,7 @@ const Maintenance = () => {
     const handleDelete = async (type, id) => {
         if (!window.confirm('Are you sure you want to delete this item?')) return;
         try {
-            await axios.delete(`http://127.0.0.1:5000/api/maintenance/${type}/${id}`);
+            await axios.delete(`http://localhost:5001/api/maintenance/${type}/${id}`);
             fetchData();
         } catch (err) {
             console.error('Error deleting', err);

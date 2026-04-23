@@ -15,8 +15,8 @@ const Reports = () => {
     const fetchReports = async () => {
         try {
             const [memRes, userRes] = await Promise.all([
-                axios.get('http://127.0.0.1:5000/api/reports/memberships'),
-                user.role === 'Admin' ? axios.get('http://127.0.0.1:5000/api/reports/users') : Promise.resolve({ data: [] })
+                axios.get('http://localhost:5001/api/reports/memberships'),
+                user.role === 'Admin' ? axios.get('http://localhost:5001/api/reports/users') : Promise.resolve({ data: [] })
             ]);
             setMemberships(memRes.data);
             setUsers(userRes.data);
