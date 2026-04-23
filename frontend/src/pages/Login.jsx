@@ -59,6 +59,23 @@ const Login = () => {
                         Sign In
                     </button>
                 </form>
+
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 text-center">Test Credentials</h3>
+                    <div className="space-y-3">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded text-xs">
+                            <p className="font-bold text-blue-800 dark:text-blue-400 mb-1">Admin Account</p>
+                            <p className="dark:text-gray-300"><span className="font-medium">Email:</span> admin@ems.com</p>
+                            <p className="dark:text-gray-300"><span className="font-medium">Pass:</span> adminpassword</p>
+                        </div>
+                        <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded text-xs">
+                            <p className="font-bold text-green-800 dark:text-green-400 mb-1">User Account</p>
+                            <p className="dark:text-gray-300"><span className="font-medium">Email:</span> user@ems.com</p>
+                            <p className="dark:text-gray-300"><span className="font-medium">Pass:</span> userpassword</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="mt-6 text-center text-sm text-gray-500">
                     <Link to="/flow-chart" className="text-blue-500 hover:underline">View Flow Chart</Link>
                 </div>
