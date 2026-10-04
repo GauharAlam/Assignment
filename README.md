@@ -1,82 +1,152 @@
-# Event Management System (EMS)
+# Mini Task Board
 
-A full-stack web application for managing events and memberships.
+A small full-stack task management application built with **Next.js 16**, **TypeScript**, **React**, and **MySQL**.
 
-## Tech Stack
-- **Frontend**: React, Tailwind CSS, Axios, Lucide React
-- **Backend**: Node.js, Express, MongoDB (Mongoose)
-- **Authentication**: JWT (JSON Web Tokens)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![MySQL](https://img.shields.io/badge/MySQL-8-orange)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4)
 
-## Setup Instructions
+## Architecture Decision: Next.js API Routes (not Express)
 
-### Prerequisites
-- Node.js installed
-- MongoDB installed and running (default: `mongodb://localhost:27017/event_management`)
+I chose **Next.js App Router API routes** instead of a separate Express server for the following reasons:
 
-### Backend Setup
-1. Navigate to the `backend` folder.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file (one is already provided in this workspace) with the following:
-   ```env
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/event_management
-   JWT_SECRET=supersecretkey123
-   ```
-4. Seed the database with initial users:
-   ```bash
-   # Start the server first
-   npm run dev (or node server.js)
-   # Then use an API client (like Postman or curl) to hit:
-   POST http://localhost:5000/api/auth/seed
-   ```
-   **Default Credentials:**
-   - Admin: `admin@ems.com` / `adminpassword`
-   - User: `user@ems.com` / `userpassword`
-
-### Frontend Setup
-1. Navigate to the `frontend` folder.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
----
-
-## API Documentation (Basic)
-
-### Authentication
-- `POST /api/auth/login`: Login with email and password. Returns user object and JWT token.
-- `POST /api/auth/seed`: Initialize the database with sample Admin and User.
-
-### Maintenance (Admin Only)
-- `GET /api/maintenance/events`: Fetch all events.
-- `POST /api/maintenance/events`: Create a new event.
-- `DELETE /api/maintenance/events/:id`: Delete an event.
-- `GET /api/maintenance/members`: Fetch all members.
-- `POST /api/maintenance/members`: Create a new member.
-
-### Transactions
-- `POST /api/transactions/add`: Create a new membership.
-- `GET /api/transactions/:number`: Fetch membership details by Membership Number.
-- `PATCH /api/transactions/update/:number`: Extend or Cancel a membership.
-
-### Reports
-- `GET /api/reports/memberships`: Fetch all membership records with populated details.
-- `GET /api/reports/users`: Fetch list of system users (Admin only).
-
----
+1. **Shared TypeScript types** — Frontend and backend live in the same project, so types defined in `src/types/task.ts` are imported directly by both API routes and React components. No code generation or copy-paste needed.
+2. **Simpler deployment** — One project, one `npm run dev`, one port. No need to configure CORS or proxy between two servers.
+3. **Colocation** — API routes sit alongside the pages that consume them (`src/app/api/tasks/`), making the codebase easy to navigate.
 
 ## Features
-- **Role-Based Access**: Admins can access all modules; Users are restricted from the Maintenance module.
-- **Membership Management**: Add memberships with different durations (6mo, 1yr, 2yr).
-- **Form Validations**: Mandatory fields and valid formats checked on both frontend and backend.
-- **Flow Chart**: A reference page showing the logical application flow.
 
-# Assignment
+- **Create tasks** with a title and status (To Do / In Progress / Done)
+- **Update task status** via dropdown on each card
+- **Delete tasks** with a single click
+- **Optimistic UI updates** — status changes and deletes reflect instantly, with rollback on error
+- **Input validation** — both client-side and server-side (no empty titles, max 255 chars, valid status)
+- **Loading and error states** — spinner while fetching, error banner with "Try again" button
+- **Parameterized SQL queries** — all database queries use `?` placeholders (no string concatenation)
+- **Shared TypeScript types** — `Task`, `ApiResponse<T>`, `CreateTaskPayload`, etc. used across the stack
+
+## Project Structure
+
+```
+├── db/
+│   ├── schema.sql          # Database & table creation
+│   └── seed.sql            # Sample seed data
+├── src/
+│   ├── app/
+│   │   ├── api/tasks/
+│   │   │   ├── route.ts        # GET (list) + POST (create)
+│   │   │   └── [id]/route.ts   # PATCH (update status) + DELETE
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx            # Main task board page
+│   ├── components/
+│   │   ├── TaskCard.tsx        # Individual task card with controls
+│   │   ├── TaskForm.tsx        # New task form with validation
+│   │   └── TaskList.tsx        # Task list or empty state
+│   ├── lib/
+│   │   └── db.ts               # MySQL connection pool
+│   └── types/
+│       └── task.ts             # Shared TypeScript types
+├── .env.example                # Environment variable template
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Prerequisites
+
+- **Node.js** ≥ 18
+- **MySQL** ≥ 5.7 (MySQL 8 recommended)
+- **npm** (comes with Node.js)
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repo-url>
+cd mini-task-board
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Set up the database
+
+Make sure MySQL is running, then execute the schema and seed files:
+
+```bash
+mysql -u root -p < db/schema.sql
+mysql -u root -p < db/seed.sql
+```
+
+This creates the `mini_task_board` database with a `tasks` table and inserts 6 sample tasks.
+
+#### Table Schema
+
+```sql
+CREATE TABLE tasks (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  title      VARCHAR(255) NOT NULL,
+  status     ENUM('todo', 'in-progress', 'done') NOT NULL DEFAULT 'todo',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 4. Configure environment variables
+
+Copy the example env file and update with your MySQL credentials:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local`:
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=mini_task_board
+```
+
+### 5. Start the development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## API Endpoints
+
+| Method   | Endpoint          | Description                  | Body                            |
+| -------- | ----------------- | ---------------------------- | ------------------------------- |
+| `GET`    | `/api/tasks`      | List all tasks (newest first)| —                               |
+| `POST`   | `/api/tasks`      | Create a new task            | `{ title, status }`            |
+| `PATCH`  | `/api/tasks/:id`  | Update a task's status       | `{ status }`                   |
+| `DELETE` | `/api/tasks/:id`  | Delete a task                | —                               |
+
+### Error Responses
+
+All endpoints return a consistent JSON shape:
+
+```json
+{
+  "error": "Human-readable error message"
+}
+```
+
+With appropriate HTTP status codes: `400` (validation), `404` (not found), `500` (server error).
+
+## Tech Stack
+
+- **Frontend**: Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS 4
+- **Backend**: Next.js API Routes (server-side route handlers)
+- **Database**: MySQL with `mysql2` (promise-based, connection pooling)
+- **Styling**: Tailwind CSS with custom design tokens
