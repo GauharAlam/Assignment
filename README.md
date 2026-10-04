@@ -77,6 +77,13 @@ npm install
 
 ### 3. Set up the database
 
+**Option A: Using Docker (Recommended — fastest):**
+```bash
+docker compose up -d
+```
+This automatically boots MySQL 8 on port 3306, creates the database, and executes both `schema.sql` and `seed.sql`.
+
+**Option B: Using local MySQL:**
 Make sure MySQL is running, then execute the schema and seed files:
 
 ```bash
